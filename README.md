@@ -1,2 +1,2 @@
 # Vwederian
- Data 
+ This is a compilation of my IT portfolio
