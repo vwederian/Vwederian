@@ -1,2 +1,2 @@
 # Vwederian
- This is a compilation of my projects
+ This is a compilation of my python projects
