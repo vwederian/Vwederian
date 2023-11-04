@@ -1,2 +1,2 @@
 # Vwederian
- This is a compilation of my IT portfolio
+ This is a compilation of my projects
