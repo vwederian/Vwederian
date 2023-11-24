@@ -1,0 +1,157 @@
+--1) List all suppliers in the UK
+SELECT s.CompanyName , s.Country
+FROM dbo.Supplier s
+WHERE Country = 'UK';
+
+
+--2) List the first name, last name, and city for all customers. 
+-- Concatenate the first and last name  separated by a space and a comma as a single column 
+SELECT concat(c.FirstName, ' ',',', c.LastName) as Full_Name, c.City
+FROM dbo.Customer c;
+
+
+--3) List all customers in Sweden 
+SELECT concat(c.FirstName, ' ', c.LastName) as Customer_Name, Country
+FROM dbo.Customer c
+WHERE Country = 'Sweden';
+
+
+--4) List all suppliers in alphabetical order
+SELECT CompanyName
+FROM dbo.Supplier s 
+ORDER BY s.CompanyName ASC;
+
+
+ --5) List all suppliers with their products 
+SELECT s.CompanyName, p.ProductName
+FROM dbo.Supplier s
+INNER JOIN dbo.Product p on p.Id = s.Id
+ORDER BY CompanyName ASC;
+
+
+--6) List all orders with customers information 
+SELECT c.*, o.OrderId
+FROM dbo.Customer c
+INNER JOIN dbo.OrderItem o on o.Id = c.Id;
+
+
+--7) List all orders with product name, quantity, and price, sorted by order number 
+SELECT p.ProductName, o.Quantity, p.UnitPrice
+FROM dbo.OrderItem o
+INNER JOIN dbo.Product p on p.Id = o.Id
+ORDER BY o.Id;
+
+
+--8) Using a case statement, list all the availability of products. 
+-- When 0 then not available, else  available
+SELECT p.ProductName AS 'Product',
+       CASE IsDiscontinued
+         WHEN 0 THEN 'Not Available'
+         ELSE 'Available'
+       END AS Availability
+  FROM dbo.Product p
+  ORDER BY Product ASC;
+
+
+  --9) Using case statement, list all the suppliers and the language they speak. 
+  --The language they  speak should be their country E.g if UK, then English 
+  SELECT s.CompanyName, s.Country,
+    CASE 
+        WHEN Country IN ('UK', 'Canada','USA','Australia') THEN 'English'
+        WHEN Country = 'France' THEN 'French'
+        WHEN Country = 'Germany' THEN 'German'
+        WHEN Country = 'Italy' THEN 'Italian'
+        WHEN Country = 'Denmark' THEN 'Danish'
+        WHEN Country = 'Finland' THEN 'Finnish'
+        WHEN Country = 'Japan' THEN 'Japanese'
+        WHEN Country = 'Norway' THEN 'Norwegian'
+        WHEN Country = 'Netherlands' THEN 'Dutch'
+        WHEN Country = 'Singapore' THEN 'Singlish'
+        WHEN Country = 'Spain' THEN 'Spanish'
+        WHEN Country = 'Sweden' THEN 'Swedish'
+        WHEN Country = 'Brazil' THEN 'Portuguese'
+        ELSE 'Unknown Language'
+    END AS language
+FROM dbo.Supplier s;
+
+
+--10) List all products that are packaged in Jars 
+SELECT p.ProductName, p.Package
+FROM dbo.Product p
+WHERE Package LIKE '%jars%';
+
+
+--11) List products name, unitprice and packages for products that starts with Ca 
+SELECT p.ProductName, p.Package, p.UnitPrice
+FROM dbo.Product p
+WHERE p.ProductName LIKE 'Ca%';
+
+
+--12) List the number of products for each supplier, sorted high to low. 
+SELECT s.CompanyName, COUNT(p.Id) AS 'Products' 
+FROM dbo.Supplier s
+INNER JOIN dbo.Product p ON p.Id = s.Id
+GROUP BY S.CompanyName
+ORDER BY COUNT(p.Id) DESC;
+
+
+--13) List the number of customers in each country. 
+SELECT c.Country, COUNT(c.Id) AS 'Total Customers' 
+FROM dbo.Customer c
+GROUP BY c.Country;
+
+
+--14) List the number of customers in each country, sorted high to low. 
+SELECT c.Country, COUNT(c.Id) AS 'Total Customers' 
+FROM dbo.Customer c
+GROUP BY c.Country
+ORDER BY COUNT(c.Id) DESC;
+
+
+--15) List the total order amount for each customer, sorted high to low. 
+SELECT c.FirstName, c.LastName, SUM(o.TotalAmount) AS 'Total Order Amount'
+FROM dbo.Customer c
+INNER JOIN dbo.[Order] o ON o.Id = c.Id
+GROUP BY c.FirstName, c.LastName
+ORDER BY SUM(o.TotalAmount) DESC;
+
+
+--16) List all countries with more than 2 suppliers
+SELECT s.Country, COUNT(s.Id) AS 'Suppliers'
+FROM dbo.Supplier s
+GROUP BY s.Country
+HAVING COUNT(s.Id) > 2 ;
+
+
+--17) List the number of customers in each country. 
+--Only include countries with more than 10  customers.
+SELECT c.Country, COUNT(c.Id) AS 'Customers'
+FROM dbo.Customer c
+GROUP BY c.Country
+HAVING COUNT(c.Id) > 10 ;
+
+
+--18)  List the number of customers in each country, except the USA, 
+--sorted high to low. Only  include countries with 9 or more customers. 
+SELECT c.Country, COUNT(c.Id) AS 'Customers'
+FROM dbo.Customer c
+WHERE c.Country NOT IN ('USA')
+GROUP BY c.Country
+HAVING COUNT(c.Id) >= 9
+ORDER BY COUNT(c.Id) DESC ;
+
+
+--19) List customer with average orders between $1000 and $1200
+SELECT c.FirstName, c.LastName, CONVERT(DECIMAL(10,2), AVG(o.TotalAmount)) AS Average_Orders
+FROM dbo.[Order] o
+LEFT JOIN dbo.Customer c ON c.Id = o.Id
+GROUP BY c.FirstName, c.LastName
+HAVING AVG(o.TotalAmount) BETWEEN 1000 AND 1200
+ORDER BY AVG(o.TotalAmount) DESC;
+
+
+--20) Get the number of orders and total amount sold between 
+--Jan 1, 2013 and Jan 31, 2013.
+SELECT COUNT(o.Id) AS 'Number of Orders', SUM(o.TotalAmount) AS 'Total Sales'
+FROM dbo.[Order] o
+ WHERE o.OrderDate BETWEEN '1/1/2013' AND '1/31/2013';
